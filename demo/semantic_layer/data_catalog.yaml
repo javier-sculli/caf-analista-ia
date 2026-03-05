@@ -1,0 +1,328 @@
+# Catálogo de Datos - Cámara Argentina de Fintech
+# Este archivo describe todos los datos disponibles para la IA conversacional
+
+version: 1.0
+generated_at: "2026-02-09"
+
+# ============================================================================
+# TABLAS BASE
+# ============================================================================
+
+tables:
+  # --------------------------------------------------------------------------
+  # Medios de Pago
+  # --------------------------------------------------------------------------
+
+  - name: transferencias_inmediatas
+    schema: analytics
+    description: "Serie mensual de transferencias inmediatas (push) en Argentina. Incluye cantidad y monto nominal de operaciones."
+    source: "BCRA - Informe Mensual de Pagos Minoristas"
+    update_frequency: "Mensual (último día del mes + 15 días hábiles)"
+    granularity: "Mensual"
+    time_column: fecha
+    date_range:
+      start: "2017-01-31"
+      end: "2025-11-30"
+
+    columns:
+      - name: fecha
+        type: DATE
+        description: "Último día del mes reportado"
+        searchable_terms: ["fecha", "periodo", "mes", "when", "cuándo"]
+
+      - name: transferencias_inmediatas_cantidad
+        type: INTEGER
+        description: "Cantidad de transferencias inmediatas (push) realizadas en el mes"
+        unit: "operaciones"
+        searchable_terms: ["cantidad transferencias", "número de transferencias", "operaciones", "transacciones"]
+
+      - name: transferencias_inmediatas_monto
+        type: DECIMAL
+        description: "Monto nominal total de transferencias inmediatas en pesos argentinos"
+        unit: "ARS (pesos corrientes, no ajustados por inflación)"
+        searchable_terms: ["monto transferencias", "volumen transferencias", "pesos transferidos", "dinero"]
+
+    common_questions:
+      - "¿Cuánto crecieron las transferencias inmediatas?"
+      - "¿Cuál es el volumen de transferencias?"
+      - "Comparar transferencias con el año pasado"
+      - "Evolución de transferencias en 2024"
+
+  # --------------------------------------------------------------------------
+
+  - name: cheques
+    schema: analytics
+    description: "Serie mensual de cheques compensados en Argentina. Incluye cantidad y monto nominal."
+    source: "BCRA - Informe Mensual de Pagos Minoristas"
+    update_frequency: "Mensual"
+    granularity: "Mensual"
+    time_column: fecha
+    date_range:
+      start: "2017-01-31"
+      end: "2025-11-30"
+
+    columns:
+      - name: fecha
+        type: DATE
+        description: "Último día del mes reportado"
+
+      - name: cheques_compensados_cantidad
+        type: INTEGER
+        description: "Cantidad de cheques compensados en el mes"
+        unit: "operaciones"
+        searchable_terms: ["cantidad cheques", "número de cheques", "cheques procesados"]
+
+      - name: cheques_compensados_monto
+        type: DECIMAL
+        description: "Monto nominal total de cheques compensados en pesos"
+        unit: "ARS (pesos corrientes)"
+        searchable_terms: ["monto cheques", "volumen cheques", "pesos en cheques"]
+
+    common_questions:
+      - "¿Los cheques están cayendo?"
+      - "Comparar cheques vs transferencias"
+      - "Evolución de cheques en el tiempo"
+
+  # --------------------------------------------------------------------------
+  # Inclusión Financiera
+  # --------------------------------------------------------------------------
+
+  - name: inclusion_financiera
+    schema: analytics
+    description: "Indicadores de inclusión financiera en Argentina: bancarización, billeteras digitales, población adulta"
+    source: "BCRA - Informe de Inclusión Financiera"
+    update_frequency: "Mensual"
+    granularity: "Mensual"
+    time_column: fecha
+
+    columns:
+      - name: fecha
+        type: DATE
+        description: "Primer día del mes reportado"
+
+      - name: poblacion_adulta_millones
+        type: DECIMAL
+        description: "Población adulta total en Argentina (millones de personas)"
+        unit: "millones de personas"
+        searchable_terms: ["población", "habitantes", "adultos", "personas"]
+
+      - name: cuentas_bancarias_pct
+        type: DECIMAL
+        description: "Porcentaje de la población adulta que posee al menos una cuenta bancaria"
+        unit: "porcentaje (0-100)"
+        searchable_terms: ["bancarización", "cuentas bancarias", "población bancarizada", "inclusión tradicional"]
+
+      - name: billeteras_digitales_pct
+        type: DECIMAL
+        description: "Porcentaje de la población adulta que usa billeteras digitales (MP, Ualá, etc.)"
+        unit: "porcentaje (0-100)"
+        searchable_terms: ["billeteras digitales", "fintech", "mercado pago", "wallets", "inclusión digital"]
+
+    common_questions:
+      - "¿Qué porcentaje de argentinos está bancarizado?"
+      - "Comparar cuentas bancarias vs billeteras digitales"
+      - "Evolución de la inclusión financiera"
+      - "¿Cuántos usan billeteras digitales?"
+
+  # --------------------------------------------------------------------------
+  # Datos Macro Externos
+  # --------------------------------------------------------------------------
+
+  - name: inflacion
+    schema: external
+    description: "Serie mensual de inflación en Argentina (IPC). Datos de INDEC."
+    source: "API Externa - INDEC (simulado para demo)"
+    update_frequency: "Mensual (primeros 15 días del mes siguiente)"
+    granularity: "Mensual"
+    time_column: fecha
+
+    columns:
+      - name: fecha
+        type: DATE
+        description: "Primer día del mes reportado"
+
+      - name: ipc_mensual_pct
+        type: DECIMAL
+        description: "Variación porcentual del IPC respecto al mes anterior (DEFAULT: usar esta cuando se menciona 'inflación' sin especificar)"
+        unit: "porcentaje mensual"
+        searchable_terms: ["inflación mensual", "IPC", "variación de precios", "inflación", "inflación mes a mes"]
+
+      - name: ipc_interanual_pct
+        type: DECIMAL
+        description: "Variación porcentual del IPC respecto al mismo mes del año anterior (SOLO usar cuando se pide explícitamente 'inflación interanual' o 'inflación anual')"
+        unit: "porcentaje anual"
+        searchable_terms: ["inflación interanual", "inflación anual", "IPC anual", "inflación año sobre año"]
+
+    common_questions:
+      - "¿Cuál es la inflación actual?"
+      - "Comparar crecimiento de pagos vs inflación"
+      - "Ajustar por inflación"
+      - "Crecimiento real (deflactado)"
+
+  # --------------------------------------------------------------------------
+
+  - name: tipo_cambio
+    schema: analytics
+    description: "Serie diaria de tipo de cambio oficial en Argentina"
+    source: "BCRA - API Estadísticas (simulado para demo)"
+    update_frequency: "Diaria"
+    granularity: "Diaria"
+    time_column: fecha
+
+    columns:
+      - name: fecha
+        type: DATE
+        description: "Fecha del tipo de cambio"
+
+      - name: tipo_cambio_oficial
+        type: DECIMAL
+        description: "Tipo de cambio oficial ARS/USD"
+        unit: "pesos por dólar"
+        searchable_terms: ["dólar", "tipo de cambio", "TC", "USD", "devaluación"]
+
+
+# ============================================================================
+# VISTAS ANALÍTICAS
+# ============================================================================
+
+views:
+  - name: medios_pago_mensual
+    schema: analytics
+    description: "Vista consolidada de medios de pago mensuales: transferencias + cheques con ratios calculados"
+    based_on: ["transferencias_inmediatas", "cheques"]
+
+    columns:
+      - name: fecha
+      - name: transferencias_inmediatas_cantidad
+      - name: transferencias_inmediatas_monto
+      - name: cheques_compensados_cantidad
+      - name: cheques_compensados_monto
+      - name: monto_electronico
+        description: "Alias de transferencias_inmediatas_monto"
+      - name: monto_tradicional
+        description: "Alias de cheques_compensados_monto"
+      - name: ratio_electronico_tradicional
+        description: "Ratio entre monto electrónico y tradicional (>1 significa más electrónico)"
+
+    common_questions:
+      - "Comparar pagos electrónicos vs tradicionales"
+      - "¿Los pagos digitales superan a los cheques?"
+      - "Ratio entre transferencias y cheques"
+
+  # --------------------------------------------------------------------------
+
+  - name: inclusion_metricas
+    schema: analytics
+    description: "Métricas derivadas de inclusión financiera con cálculos de población absoluta y brechas"
+    based_on: ["inclusion_financiera"]
+
+    columns:
+      - name: fecha
+      - name: poblacion_adulta_millones
+      - name: cuentas_bancarias_pct
+      - name: billeteras_digitales_pct
+      - name: poblacion_bancarizada_millones
+        description: "Población adulta con cuentas bancarias (millones)"
+      - name: poblacion_billeteras_millones
+        description: "Población adulta con billeteras digitales (millones)"
+      - name: brecha_bancarizacion_digital_pp
+        description: "Brecha entre bancarización tradicional y digital (puntos porcentuales)"
+
+    common_questions:
+      - "¿Cuántos millones de personas tienen cuentas?"
+      - "¿Cuál es la brecha entre bancos y fintech?"
+      - "Cerrar la brecha de inclusión"
+
+
+# ============================================================================
+# RELACIONES ENTRE TABLAS
+# ============================================================================
+
+relationships:
+  - from_table: transferencias_inmediatas
+    to_table: cheques
+    join_type: LEFT JOIN
+    join_condition: "transferencias_inmediatas.fecha = cheques.fecha"
+    description: "Join mensual para comparar medios de pago electrónicos vs tradicionales"
+
+  - from_table: transferencias_inmediatas
+    to_table: inflacion
+    join_type: LEFT JOIN
+    join_condition: "transferencias_inmediatas.fecha = inflacion.fecha"
+    description: "Join para ajustar montos por inflación (crecimiento real)"
+
+  - from_table: inclusion_financiera
+    to_table: inflacion
+    join_type: LEFT JOIN
+    join_condition: "inclusion_financiera.fecha = inflacion.fecha"
+    description: "Join para contextualizar inclusión con entorno macro"
+
+
+# ============================================================================
+# CÁLCULOS COMUNES
+# ============================================================================
+
+common_calculations:
+  - name: crecimiento_yoy
+    description: "Crecimiento año sobre año (YoY) de una métrica"
+    formula: "((valor_actual - valor_hace_12_meses) / valor_hace_12_meses) * 100"
+    sql_template: "((LAG({column}, 12) OVER (ORDER BY fecha) - {column}) / LAG({column}, 12) OVER (ORDER BY fecha)) * 100"
+
+  - name: crecimiento_real
+    description: "Crecimiento ajustado por inflación"
+    formula: "((valor_nominal / indice_inflacion) - 1) * 100"
+    requires: ["inflacion.ipc_mensual_pct"]
+
+  - name: promedio_movil
+    description: "Promedio móvil de N períodos"
+    sql_template: "AVG({column}) OVER (ORDER BY fecha ROWS BETWEEN {n} PRECEDING AND CURRENT ROW)"
+
+  - name: deflactar
+    description: "Convertir valores nominales a reales usando IPC base"
+    requires: ["inflacion.ipc_mensual_pct"]
+    formula: "valor_nominal * (ipc_base / ipc_actual)"
+
+
+# ============================================================================
+# GLOSARIO DE TÉRMINOS
+# ============================================================================
+
+glossary:
+  transferencias_inmediatas:
+    terms: ["transferencias", "transferencias push", "transf inmediatas", "transferencias electrónicas"]
+    definition: "Operaciones de transferencia de fondos entre cuentas que se acreditan inmediatamente"
+
+  cheques:
+    terms: ["cheques", "cheques compensados", "pago con cheque"]
+    definition: "Medio de pago tradicional mediante documentos bancarios"
+
+  inflacion:
+    terms: ["inflación", "IPC", "índice de precios", "variación de precios"]
+    definition: "Aumento generalizado y sostenido de los precios de bienes y servicios"
+
+  bancarizacion:
+    terms: ["bancarización", "inclusión financiera", "población bancarizada"]
+    definition: "Porcentaje de población con acceso a servicios financieros formales"
+
+  crecimiento_real:
+    terms: ["crecimiento real", "deflactado", "ajustado por inflación", "en términos reales"]
+    definition: "Crecimiento nominal menos inflación"
+
+  yoy:
+    terms: ["año sobre año", "YoY", "interanual", "vs año anterior"]
+    definition: "Comparación con el mismo período del año anterior"
+
+
+# ============================================================================
+# METADATOS DEL CATÁLOGO
+# ============================================================================
+
+metadata:
+  total_tables: 5
+  total_views: 2
+  oldest_data: "2017-01-31"
+  newest_data: "2025-11-30"
+  update_schedule: "Mensual (15-20 de cada mes)"
+  data_quality: "Alta (fuente oficial BCRA)"
+  coverage_geographic: "Nacional (Argentina)"
+  coverage_demographic: "Población adulta (18+ años)"

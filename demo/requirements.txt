@@ -1,0 +1,24 @@
+# Core data processing
+pandas==2.1.4
+duckdb==0.10.0
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# AI/LLM
+anthropic==0.18.1
+langchain==0.1.6
+langchain-anthropic==0.1.1
+chromadb==0.4.22
+
+# Visualization
+plotly==5.18.0
+streamlit==1.31.0
+
+# APIs & web
+requests==2.31.0
+python-dotenv==1.0.1
+
+# Utilities
+pyyaml==6.0.1
+python-dateutil==2.8.2
+loguru==0.7.2

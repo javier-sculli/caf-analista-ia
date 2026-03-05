@@ -1,0 +1,5 @@
+# Test dependencies for CAF Analytics Demo
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-html>=3.2.0
+pytest-xdist>=3.3.0  # for parallel test execution
